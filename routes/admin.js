@@ -20,7 +20,14 @@ router.post('/login', async (req, res) => {
   if (username === adminUser && password === adminPass) {
     req.session.isAdmin = true;
     req.session.username = username;
-    res.json({ success: true, message: 'Login berhasil!' });
+
+    req.session.save((err) => {
+      if (err) {
+        return res.status(500).json({ success: false, message: 'Session error' });
+      }
+      res.json({ success: true, message: 'Login berhasil!' });
+    });
+
   } else {
     res.status(401).json({ success: false, message: 'Username atau password salah!' });
   }

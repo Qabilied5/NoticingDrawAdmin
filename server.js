@@ -7,6 +7,7 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
+app.set('trust proxy', 1)
 const PORT = process.env.PORT || 3000;
 
 // ─── MongoDB Connection ───────────────────────────────────────────────────────
@@ -38,11 +39,11 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.MONGODB_URI,
-    ttl: 24 * 60 * 60 // 1 day
+    ttl: 24 * 60 * 60
   }),
   cookie: {
-    secure: true,
-    sameSite: 'none',
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000
   }
 }));
