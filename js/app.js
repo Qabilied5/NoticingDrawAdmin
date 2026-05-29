@@ -24,23 +24,34 @@ function showToast(msg, type = 'success') {
 
 // ── Submit Modal ──────────────────────────────────────────────────────────────
 
-function openSubmitModal() {
-  // Check if canvas has content
-  const imgData = canvas.toDataURL('image/png');
+// function openSubmitModal() {
+//   // Check if canvas has content
+//   const imgData = canvas.toDataURL('image/png');
 
-  // Check if canvas is still blank
-  const tempCtx = document.createElement('canvas').getContext('2d');
-  const tempCanvas = document.createElement('canvas');
-  tempCanvas.width = canvas.width;
-  tempCanvas.height = canvas.height;
-  const tc = tempCanvas.getContext('2d');
-  tc.fillStyle = '#ffffff';
-  tc.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-  if (canvas.toDataURL() === tempCanvas.toDataURL()) {
+//   // Check if canvas is still blank
+//   const tempCtx = document.createElement('canvas').getContext('2d');
+//   const tempCanvas = document.createElement('canvas');
+//   tempCanvas.width = canvas.width;
+//   tempCanvas.height = canvas.height;
+//   const tc = tempCanvas.getContext('2d');
+//   tc.fillStyle = '#ffffff';
+//   tc.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+//   if (canvas.toDataURL() === tempCanvas.toDataURL()) {
+//     showToast('Buat gambar dulu yuk! 🎨', 'error');
+//     return;
+//   }
+
+//   document.getElementById('previewImg').src = imgData;
+//   document.getElementById('submitModal').classList.add('open');
+// }
+
+function openSubmitModal() {
+  if (!hasStarted) {
     showToast('Buat gambar dulu yuk! 🎨', 'error');
     return;
   }
 
+  const imgData = canvas.toDataURL('image/png');
   document.getElementById('previewImg').src = imgData;
   document.getElementById('submitModal').classList.add('open');
 }

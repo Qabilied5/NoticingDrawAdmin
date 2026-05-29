@@ -7,7 +7,7 @@ let currentDrawingId = null;
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
 async function checkAuth() {
-  const res = await fetch('/api/admin/check');
+  const res = await fetch('/api/admin/check', { credentials: 'include' });
   const data = await res.json();
   if (data.isAdmin) {
     showDashboard(data.username);
@@ -34,6 +34,7 @@ async function doLogin() {
     const res = await fetch('/api/admin/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ username, password })
     });
     const data = await res.json();
@@ -60,7 +61,10 @@ function showDashboard(username) {
 }
 
 async function doLogout() {
-  await fetch('/api/admin/logout', { method: 'POST' });
+  await fetch('/api/admin/logout', {
+    method: 'POST',
+    credentials: 'include'
+  });
   location.reload();
 }
 
@@ -68,7 +72,7 @@ async function doLogout() {
 
 async function loadStats() {
   try {
-    const res = await fetch('/api/admin/stats');
+    const res = await fetch('/api/admin/stats', { credentials: 'include' });
     const data = await res.json();
     if (data.success) {
       const s = data.stats;
@@ -110,7 +114,7 @@ async function loadDrawings(page = 1) {
   if (currentFilter !== 'all') params.set('status', currentFilter);
 
   try {
-    const res = await fetch(`/api/admin/drawings?${params}`);
+    const res = await fetch(`/api/admin/drawings?${params}`, { credentials: 'include' });
     const data = await res.json();
 
     if (!data.success) throw new Error(data.message);
@@ -125,9 +129,12 @@ async function loadDrawings(page = 1) {
 
     grid.innerHTML = data.drawings.map(d => `
       <div class="drawing-card" onclick="openDrawing('${d._id}')">
-        <div style="width:100%;aspect-ratio:4/3;background:#1e1e26;display:flex;align-items:center;justify-content:center;color:#505060;font-size:12px;font-family:'DM Mono',monospace;">
-          Klik untuk lihat
-        </div>
+        <img 
+          src="/api/admin/drawings/${d._id}/thumb" 
+          style="width:100%;aspect-ratio:4/3;object-fit:cover;background:#1e1e26;"
+          loading="lazy"
+          onerror="this.style.background='#1e1e26'"
+        />
         <div class="drawing-card-info">
           <div class="card-title">${escapeHtml(d.title)}</div>
           <div class="card-meta">
@@ -173,7 +180,7 @@ async function openDrawing(id) {
 
   // Load image
   try {
-    const res = await fetch(`/api/admin/drawings/${id}`);
+    const res = await fetch(`/api/admin/drawings/${id}`, { credentials: 'include' });
     const data = await res.json();
 
     if (!data.success) throw new Error(data.message);
@@ -211,6 +218,7 @@ async function updateStatus(status) {
     const res = await fetch(`/api/admin/drawings/${currentDrawingId}/status`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',                          // ← tambah ini
       body: JSON.stringify({ status, adminNote })
     });
     const data = await res.json();
@@ -233,7 +241,10 @@ async function deleteDrawing() {
   if (!confirm('Yakin ingin menghapus gambar ini? Tindakan tidak bisa dibatalkan.')) return;
 
   try {
-    const res = await fetch(`/api/admin/drawings/${currentDrawingId}`, { method: 'DELETE' });
+    const res = await fetch(`/api/admin/drawings/${currentDrawingId}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
     const data = await res.json();
 
     if (data.success) {
